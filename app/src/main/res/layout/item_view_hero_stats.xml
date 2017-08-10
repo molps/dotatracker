@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/item_divider_hero_stats_top"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#D3D3D3" />
+
+    <LinearLayout
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/hero_stats_image"
+                android:layout_width="50dp"
+                android:layout_height="35dp"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_launcher_round" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/hero_stats_games_played"
+            style="@style/Base.TextAppearance.AppCompat.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="55"
+            android:textSize="14sp" />
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/hero_Stats_winrate"
+                android:text="68,77%"
+                style="@style/Base.TextAppearance.AppCompat.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="8dp"
+                android:textSize="14sp" />
+
+            <View
+                android:id="@+id/percentage_static_view"
+                android:layout_width="85dp"
+                android:layout_height="3dp"
+                android:layout_below="@id/hero_Stats_winrate"
+                android:background="@drawable/round_corners_drawable_light" />
+
+            <View
+                android:id="@+id/percentage_view"
+                android:layout_width="45dp"
+                android:layout_height="3dp"
+                android:layout_below="@id/hero_Stats_winrate"
+                android:background="@drawable/round_corners_drawable" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:id="@+id/hero_stats_win_loss"
+            android:text="5005/1000"
+            style="@style/Base.TextAppearance.AppCompat.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/item_divider_hero_stats_bot"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="#D3D3D3" />
+
+
+</LinearLayout>

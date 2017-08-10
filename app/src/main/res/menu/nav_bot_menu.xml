@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_bot_home"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="Home" />
+    <item
+        android:id="@+id/nav_bot_search"
+        android:icon="@drawable/ic_find_in_page_black_24dp"
+        android:title="Search" />
+    <item
+        android:id="@+id/nav_bot_info"
+        android:icon="@drawable/ic_date_range_black_24dp"
+        android:title="Info" />
+
+</menu>
