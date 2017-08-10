@@ -19,8 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
-import com.example.nikola.dotatracker.MainActivity;
 import com.example.nikola.dotatracker.R;
+import com.example.nikola.dotatracker.SearchActivity;
 import com.example.nikola.dotatracker.adapters.RecAdapter;
 import com.example.nikola.dotatracker.interfaces.MyListItem;
 import com.example.nikola.dotatracker.utils.NetworkUtils;
@@ -65,7 +65,7 @@ public class HeroStatsFragment extends Fragment implements LoaderManager.LoaderC
             }
         });
         headerLayout = (LinearLayout) view.findViewById(R.id.hero_stats_header_description);
-        playerId = getActivity().getIntent().getStringExtra(MainActivity.INTENT_EXTRA_KEY);
+        playerId = getActivity().getIntent().getStringExtra(SearchActivity.INTENT_EXTRA_KEY);
         adapter = new RecAdapter(getContext(), Glide.with(this), new ArrayList<MyListItem>());
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_herostats_recview);
         recyclerView.setHasFixedSize(true);

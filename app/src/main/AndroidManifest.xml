@@ -21,8 +21,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".details.PlayerDetailActivity" />
         <activity
-            android:name=".details.PlayerDetailActivity"/>
+            android:windowSoftInputMode="adjustPan"
+            android:name=".SearchActivity"
+            android:theme="@style/SearchThemeStyle"/>
     </application>
 
 </manifest>

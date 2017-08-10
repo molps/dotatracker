@@ -18,5 +18,9 @@
     <color name="match_won">#00760a</color>
     <color name="match_lost">#d20000</color>
 
+    <!-- za SearchActivity style -->
+    <color name="colorPrimarySearch">#ffffff</color>
+    <color name="colorPrimaryDarkSearch">#d2d2d2</color>
+
 
 </resources>

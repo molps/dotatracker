@@ -17,8 +17,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
-import com.example.nikola.dotatracker.MainActivity;
 import com.example.nikola.dotatracker.R;
+import com.example.nikola.dotatracker.SearchActivity;
 import com.example.nikola.dotatracker.adapters.RecAdapter;
 import com.example.nikola.dotatracker.interfaces.MyListItem;
 import com.example.nikola.dotatracker.utils.NetworkUtils;
@@ -85,7 +85,7 @@ public class RecentFragment extends Fragment implements LoaderManager.LoaderCall
             }
         });
         pBar = (ProgressBar) view.findViewById(R.id.recent_progress_bar);
-        playerId = getActivity().getIntent().getStringExtra(MainActivity.INTENT_EXTRA_KEY);
+        playerId = getActivity().getIntent().getStringExtra(SearchActivity.INTENT_EXTRA_KEY);
         adapter = new RecAdapter(getContext(), Glide.with(this), new ArrayList<MyListItem>());
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recent_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

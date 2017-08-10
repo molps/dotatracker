@@ -31,6 +31,17 @@
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
+    <style name="SearchThemeStyle" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--  <item name="android:editTextColor">@color/colorAccent</item>
+                  ^^ ovo se koristi za boju edittexta u searchview
+                  P.S. ja sam ga koristio za searchview, verovatno je za sve-->
+
+        <item name="colorPrimary">@color/colorPrimarySearch</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkSearch</item>
+        <item name="colorAccent">@color/accent</item>
+
+    </style>
+
 
 
 
