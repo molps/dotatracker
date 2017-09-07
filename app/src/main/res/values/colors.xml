@@ -23,4 +23,10 @@
     <color name="colorPrimaryDarkSearch">#d2d2d2</color>
 
 
+    <!-- Colors for View Dim-->
+    <color name="startColor">#00FFFFFF</color>
+    <color name="endColor">#99000000</color>
+
+
+
 </resources>

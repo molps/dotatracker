@@ -61,7 +61,7 @@ public class RecentMatches implements MyListItem {
                     return timeInHours + " hours ago";
                 }
             } else {
-                if (timeInDays < 31) {
+                if (timeInDays < 30) {
                     if (timeInDays < 2) {
                         return "a day ago";
                     } else {

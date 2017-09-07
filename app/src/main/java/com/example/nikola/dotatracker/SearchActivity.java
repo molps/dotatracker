@@ -1,5 +1,7 @@
 package com.example.nikola.dotatracker;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -38,15 +42,19 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
     private RecAdapter mAdapter;
     private ProgressBar pBarSearch;
     private static final String QUERY_BUNDLE_KEY = "bundle_key";
+    private View dimView;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        dimView = findViewById(R.id.dim_View);
         pBarSearch = (ProgressBar) findViewById(R.id.pBarSearch);
         mAdapter = new RecAdapter(Glide.with(this), new ArrayList<MyListItem>(), this);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.search_recView);
@@ -54,9 +62,22 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setHasFixedSize(true);
+        dimView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (searchView.hasFocus())
+                    searchView.clearFocus();
+                return false;
+            }
+        });
+        final int startColor = ContextCompat.getColor(SearchActivity.this, R.color.startColor);
+        final int endColor = ContextCompat.getColor(SearchActivity.this, R.color.endColor);
+        animateDimView(startColor, endColor, 300);
+
 
         getLoaderManager().initLoader(0, null, this);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -68,7 +89,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         //ovo je resilo problem, tako sto stavim da se ne vidi uopste
         searchItem.setVisible(false);
 
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         searchView.setQueryHint("Search Players");
 
@@ -117,6 +138,20 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
             }
         });
 
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                int startColor = ContextCompat.getColor(SearchActivity.this, R.color.startColor);
+                int endColor = ContextCompat.getColor(SearchActivity.this, R.color.endColor);
+                if (hasFocus)
+                    animateDimView(startColor, endColor, 0);
+                else
+                    animateDimView(endColor, startColor, 0);
+
+            }
+        });
+
+
         return true;
     }
 
@@ -146,6 +181,19 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return (activeNetwork != null && activeNetwork.isConnected());
 
+    }
+
+    private void animateDimView(int startColor, int endColor, long startDelay) {
+        ValueAnimator colorAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), startColor, endColor);
+        colorAnimator.setDuration(200);
+        colorAnimator.setStartDelay(startDelay);
+        colorAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                dimView.setBackgroundColor((int) animation.getAnimatedValue());
+            }
+        });
+        colorAnimator.start();
     }
 
     private void showToast(Context context, String text) {
