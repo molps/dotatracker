@@ -14,9 +14,11 @@ import com.example.nikola.dotatracker.data.DotaContract.DotaEntry;
 public class CurAdapter extends RecyclerView.Adapter<CurAdapter.MyViewHolder> {
 
     private Cursor cursor;
+    private OnSuggestionClickListener suggestionListener;
 
-    public CurAdapter(Cursor cursor) {
+    public CurAdapter(Cursor cursor, OnSuggestionClickListener suggestionListener) {
         this.cursor = cursor;
+        this.suggestionListener = suggestionListener;
     }
 
     @Override
@@ -45,17 +47,28 @@ public class CurAdapter extends RecyclerView.Adapter<CurAdapter.MyViewHolder> {
         notifyDataSetChanged();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public interface OnSuggestionClickListener {
+        public void onSuggestionClick(String query);
+    }
+
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView entryTextView;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             entryTextView = (TextView) itemView.findViewById(R.id.recEntryTextView);
+            itemView.setOnClickListener(this);
         }
 
         public void bindType(Cursor cursor) {
             String entry = cursor.getString(cursor.getColumnIndex(DotaEntry.COLUMN_ENTRY));
             entryTextView.setText(entry);
+        }
+
+        @Override
+        public void onClick(View v) {
+            String query = entryTextView.getText().toString();
+            suggestionListener.onSuggestionClick(query);
         }
     }
 }

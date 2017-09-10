@@ -42,7 +42,7 @@ import com.example.nikola.dotatracker.utils.NetworkUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<MyListItem>>, RecAdapter.OnItemViewClickListener {
+public class SearchActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<MyListItem>>, RecAdapter.OnItemViewClickListener, CurAdapter.OnSuggestionClickListener {
     private Toast toast;
     private static final String LOG_TAG = SearchActivity.class.getSimpleName();
     public static final String INTENT_EXTRA_KEY = "playerID";
@@ -107,7 +107,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         pBarSearch = (ProgressBar) findViewById(R.id.pBarSearch);
         mAdapter = new RecAdapter(Glide.with(this), new ArrayList<MyListItem>(), this);
 
-        cursorAdapter = new CurAdapter(null);
+        cursorAdapter = new CurAdapter(null, this);
 
         recentEntryRecView = (RecyclerView) findViewById(R.id.recentEntry_recView);
         recentEntryRecView.setLayoutManager(new LinearLayoutManager(this));
@@ -282,6 +282,11 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         Intent intent = new Intent(this, PlayerDetailActivity.class);
         intent.putExtra(INTENT_EXTRA_KEY, String.valueOf(playerId));
         startActivity(intent);
+    }
+
+    @Override
+    public void onSuggestionClick(String query) {
+        searchView.setQuery(query, true);
     }
 
     private static class AsyncNetworkLoader extends AsyncTaskLoader<List<MyListItem>> {
