@@ -23,9 +23,15 @@
         </activity>
         <activity android:name=".details.PlayerDetailActivity" />
         <activity
-            android:windowSoftInputMode="adjustPan"
             android:name=".SearchActivity"
-            android:theme="@style/SearchThemeStyle"/>
+            android:theme="@style/SearchThemeStyle"
+            android:windowSoftInputMode="adjustPan" />
+
+        <provider
+            android:name=".data.DotaProvider"
+            android:authorities="com.example.nikola.dotatracker"
+            android:exported="false" />
     </application>
+
 
 </manifest>

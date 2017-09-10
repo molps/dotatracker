@@ -2,14 +2,20 @@ package com.example.nikola.dotatracker.data;
 
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.example.nikola.dotatracker.data.DotaContract.DotaEntry;
+
 public class DotaProvider extends ContentProvider {
+
+    private static final String LOG_TAG = DotaProvider.class.getSimpleName();
 
     private static final int CODE_SEARCH = 100;
     private static final int CODE_SEARCH_ID = 101;
@@ -21,7 +27,7 @@ public class DotaProvider extends ContentProvider {
         UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         matcher.addURI(DotaContract.CONTENT_AUTHORITY, DotaContract.PATH_SEARCH, CODE_SEARCH);
-        matcher.addURI(DotaContract.CONTENT_AUTHORITY, DotaContract.PATH_SEARCH + "/#", CODE_SEARCH_ID);
+        matcher.addURI(DotaContract.CONTENT_AUTHORITY, DotaContract.PATH_SEARCH + "/*", CODE_SEARCH_ID);
 
         return matcher;
     }
@@ -39,15 +45,59 @@ public class DotaProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Cursor cursor;
 
-        return null;
-    }
+        switch (sUriMatcher.match(uri)) {
+            case CODE_SEARCH:
+                cursor = null;
+                break;
 
+            case CODE_SEARCH_ID:
+                selection = DotaEntry.COLUMN_ENTRY + " LIKE ?";
+                selectionArgs = new String[]{uri.getLastPathSegment() + "%"};
+                sortOrder = DotaEntry._ID + " DESC";
+                cursor = mDbHelper.getReadableDatabase().query(
+                        DotaEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            default:
+                throw new UnsupportedOperationException("Can not perform query on this uri: " + uri);
+        }
+        if (cursor != null) {
+            cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        }
+        return cursor;
+    }
 
 
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        return null;
+        Uri returnUri;
+        long rowId;
+
+        switch (sUriMatcher.match(uri)) {
+            case CODE_SEARCH:
+                rowId = mDbHelper.getWritableDatabase().insert(
+                        DotaEntry.TABLE_NAME,
+                        null,
+                        values);
+                if (rowId != -1)
+                    returnUri = ContentUris.withAppendedId(uri, rowId);
+                else
+                    throw new SQLException("Failed to insert row into: " + uri);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unkown uri " + uri);
+        }
+
+        getContext().getContentResolver().notifyChange(uri, null);
+
+
+        return returnUri;
     }
 
     @Override

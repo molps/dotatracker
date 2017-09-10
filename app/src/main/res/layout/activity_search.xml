@@ -26,28 +26,29 @@
 
 
     <ProgressBar
-        android:layout_centerInParent="true"
         android:id="@+id/pBarSearch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:visibility="gone" />
 
     <android.support.v7.widget.RecyclerView
-        android:layout_below="@id/app_bar_layout_search_activity"
         android:id="@+id/search_recView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/app_bar_layout_search_activity" />
+
     <View
         android:id="@+id/dim_View"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:textSize="100sp"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:id="@+id/experimentTextView"/>
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@id/app_bar_layout_search_activity"
+        android:id="@+id/recentEntry_recView"
+        android:layout_width="match_parent"
+        android:background="#FFFFFF"
+        android:layout_height="wrap_content" />
 
 
 </RelativeLayout>
