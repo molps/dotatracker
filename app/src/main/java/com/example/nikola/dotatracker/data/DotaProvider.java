@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.example.nikola.dotatracker.data.DotaContract.DotaEntry;
+import com.example.nikola.dotatracker.data.DotaContract.DotaFollowing;
 
 public class DotaProvider extends ContentProvider {
 
@@ -69,6 +70,17 @@ public class DotaProvider extends ContentProvider {
                         null,
                         sortOrder);
                 break;
+
+            case CODE_FOLLOW:
+                cursor = mDbHelper.getReadableDatabase().query(
+                        DotaFollowing.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
             default:
                 throw new UnsupportedOperationException("Can not perform query on this uri: " + uri);
         }
@@ -96,6 +108,18 @@ public class DotaProvider extends ContentProvider {
                 else
                     throw new SQLException("Failed to insert row into: " + uri);
                 break;
+
+            case CODE_FOLLOW:
+                rowId = mDbHelper.getWritableDatabase().insert(
+                        DotaFollowing.TABLE_NAME,
+                        null,
+                        values);
+                if (rowId != -1)
+                    returnUri = ContentUris.withAppendedId(uri, rowId);
+                else
+                    throw new SQLException("Failed to insert row into: " + uri);
+                break;
+
             default:
                 throw new UnsupportedOperationException("Unkown uri " + uri);
         }
