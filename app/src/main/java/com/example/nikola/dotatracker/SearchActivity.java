@@ -43,25 +43,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<MyListItem>>, RecAdapter.OnItemViewClickListener, CurAdapter.OnSuggestionClickListener {
+
     private Toast toast;
-    private static final String LOG_TAG = SearchActivity.class.getSimpleName();
-    public static final String INTENT_EXTRA_KEY = "playerID";
     private RecAdapter mAdapter;
     private ProgressBar pBarSearch;
-    private static final String QUERY_BUNDLE_KEY = "bundle_key";
     private View dimView;
     private SearchView searchView;
     private CurAdapter cursorAdapter;
-    private static final int RECENT_ENTRY_LOADER_ID = 1;
-    private static final String BUNDLE_QUERY_KEY = "queryKey";
     private RecyclerView recentEntryRecView;
+
+    public static final String INTENT_EXTRA_KEY = "playerID";
+    private static final String BUNDLE_SEARCH = "search";
+    private static final int LOADER_SUGGESTION = 1;
+    private static final int LOADER_SEARCH = 0;
+    private static final String BUNDLE_SUGGESTION = "suggest";
+    private static final String LOG_TAG = SearchActivity.class.getSimpleName();
+
 
     private LoaderManager.LoaderCallbacks<Cursor> recentEntryLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             if (args != null) {
-                String query = args.getString(BUNDLE_QUERY_KEY);
+                String query = args.getString(BUNDLE_SUGGESTION);
                 Uri uri = DotaEntry.CONTENT_URI.buildUpon().appendPath(query).build();
                 return new CursorLoader(
                         SearchActivity.this,
@@ -131,8 +135,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         animateDimView(startColor, endColor, 300);
 
 
-        getLoaderManager().initLoader(0, null, this);
-        getLoaderManager().initLoader(RECENT_ENTRY_LOADER_ID, null, recentEntryLoader);
+        getLoaderManager().initLoader(LOADER_SEARCH, null, this);
+        getLoaderManager().initLoader(LOADER_SUGGESTION, null, recentEntryLoader);
     }
 
 
@@ -182,10 +186,10 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 contentValues.put(DotaEntry.COLUMN_ENTRY, query);
                 getContentResolver().insert(DotaEntry.CONTENT_URI, contentValues);
                 Bundle bundle = new Bundle();
-                bundle.putString(QUERY_BUNDLE_KEY, query);
+                bundle.putString(BUNDLE_SEARCH, query);
                 if (isConnected()) {
                     pBarSearch.setVisibility(View.VISIBLE);
-                    getLoaderManager().restartLoader(0, bundle, SearchActivity.this);
+                    getLoaderManager().restartLoader(LOADER_SEARCH, bundle, SearchActivity.this);
                 } else {
                     showToast(SearchActivity.this, "Check your network connection");
                 }
@@ -196,9 +200,9 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
             public boolean onQueryTextChange(String newText) {
                 if (!TextUtils.isEmpty(newText)) {
                     Bundle bundle = new Bundle();
-                    bundle.putString(BUNDLE_QUERY_KEY, newText);
+                    bundle.putString(BUNDLE_SUGGESTION, newText);
                     recentEntryRecView.setVisibility(View.VISIBLE);
-                    getLoaderManager().restartLoader(RECENT_ENTRY_LOADER_ID, bundle, recentEntryLoader);
+                    getLoaderManager().restartLoader(LOADER_SUGGESTION, bundle, recentEntryLoader);
                 } else {
                     // Da se obrise lista kada nema nikakvog texta u searchu
                     cursorAdapter.swapCursor(null);
@@ -317,7 +321,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         public List<MyListItem> loadInBackground() {
             Log.v(LOG_TAG, "TIMECHECKING, loadInBackground");
             String query;
-            query = args.getString(QUERY_BUNDLE_KEY);
+            query = args.getString(BUNDLE_SEARCH);
             return NetworkUtils.fetchSearchData(query);
         }
 
