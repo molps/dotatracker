@@ -7,11 +7,20 @@ public class Player implements MyListItem {
     private String userName;
     private long userId;
     private String imageUrl;
+    private boolean followStatus;
 
     public Player(String userName, long userId, String imageUrl) {
         this.userName = userName;
         this.userId = userId;
         this.imageUrl = imageUrl;
+    }
+
+    public void setStatus(boolean status) {
+        followStatus = status;
+    }
+
+    public boolean getStatus() {
+        return followStatus;
     }
 
     public String getUserName() {

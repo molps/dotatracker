@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,8 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private static final String LOG_TAG = RecAdapter.class.getSimpleName();
 
 
     private String[] heroUrlsArray;
@@ -136,7 +139,6 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private TextView tvId;
         private CircleImageView ivImage;
         private Button followButton;
-        private boolean isFollowing;
 
         PlayerViewHolder(View itemView) {
             super(itemView);
@@ -149,21 +151,23 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         private void bindType(MyListItem currentPlayer) {
+            cursor.moveToPosition(-1);
             Player item = (Player) currentPlayer;
             long playerId = item.getUserId();
             long followId;
 
             while (cursor.moveToNext()) {
                 followId = (long) cursor.getInt(cursor.getColumnIndex(DotaFollowing.COLUMN_PLAYER_ID));
+                Log.v(LOG_TAG, "FOLLOW TEST: " + (playerId==followId));
                 if (playerId == followId) {
-                    isFollowing = true;
+                    item.setStatus(true);
                     break;
                 } else
-                    isFollowing = false;
+                    item.setStatus(false);
 
             }
 
-            if (isFollowing)
+            if (item.getStatus())
                 followButton.setText("Unfollow");
             else
                 followButton.setText("Follow");
@@ -175,20 +179,21 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            long playerId = ((Player) list.get(position)).getUserId();
+            Player player = (Player) list.get(position);
+            long playerId = player.getUserId();
             switch (v.getId()) {
                 case R.id.itemView:
                     listener.onItemViewClick(playerId);
                     break;
                 case R.id.follow_button:
-                    if (isFollowing) {
+                    if (player.getStatus()) {
                         Uri uri = DotaFollowing.CONTENT_URI.buildUpon().appendPath(String.valueOf(playerId)).build();
                         context.getContentResolver().delete(
                                 uri,
                                 null,
                                 null);
                         followButton.setText("Follow");
-                        isFollowing = false;
+                       player.setStatus(false);
                     } else {
                         ContentValues values = new ContentValues();
                         values.put(DotaFollowing.COLUMN_PLAYER_ID, playerId);
@@ -196,7 +201,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 DotaFollowing.CONTENT_URI,
                                 values);
                         followButton.setText("Unfollow");
-                        isFollowing = true;
+                        player.setStatus(true);
                     }
                     break;
 

@@ -56,7 +56,6 @@
             android:layout_marginRight="16dp"
             android:background="@drawable/follow_button_solid"
             android:foreground="?attr/selectableItemBackground"
-            android:text="Follow"
             android:textSize="11sp" />
 
     </LinearLayout>
