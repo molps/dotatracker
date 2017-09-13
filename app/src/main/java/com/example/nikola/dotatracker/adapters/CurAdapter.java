@@ -48,7 +48,7 @@ public class CurAdapter extends RecyclerView.Adapter<CurAdapter.MyViewHolder> {
     }
 
     public interface OnSuggestionClickListener {
-        public void onSuggestionClick(String query);
+        void onSuggestionClick(String query);
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

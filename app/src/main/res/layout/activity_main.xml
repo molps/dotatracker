@@ -44,12 +44,11 @@
     P.S. bottomNavView je bio van koordinatora u RelativeLayout
             -->
         <FrameLayout
-            android:clipToPadding="false"
-            android:paddingBottom="54dp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:id="@+id/fragment_placeholder_main_activity"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
 
     </android.support.design.widget.CoordinatorLayout>
 
