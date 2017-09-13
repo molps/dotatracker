@@ -1,14 +1,18 @@
 package com.example.nikola.dotatracker.adapters;
 
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,6 +21,7 @@ import com.example.nikola.dotatracker.HeroStats;
 import com.example.nikola.dotatracker.Player;
 import com.example.nikola.dotatracker.R;
 import com.example.nikola.dotatracker.RecentMatches;
+import com.example.nikola.dotatracker.data.DotaContract.DotaFollowing;
 import com.example.nikola.dotatracker.interfaces.MyListItem;
 
 import java.util.List;
@@ -31,12 +36,15 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private RequestManager glide;
     private OnItemViewClickListener listener;
     private Context context;
+    private Cursor cursor;
 
 
-    public RecAdapter(RequestManager glide, List<MyListItem> list, OnItemViewClickListener listener) {
+    public RecAdapter(Context context, RequestManager glide, List<MyListItem> list, OnItemViewClickListener listener, Cursor cursor) {
         this.glide = glide;
         this.list = list;
         this.listener = listener;
+        this.cursor = cursor;
+        this.context = context;
     }
 
     public RecAdapter(Context context, RequestManager glide, List<MyListItem> list) {
@@ -115,6 +123,10 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    public void setupFollowingList(Cursor cursor) {
+        this.cursor = cursor;
+    }
+
     public interface OnItemViewClickListener {
         void onItemViewClick(long playerId);
     }
@@ -123,18 +135,38 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private TextView tvName;
         private TextView tvId;
         private CircleImageView ivImage;
+        private Button followButton;
+        private boolean isFollowing;
 
         PlayerViewHolder(View itemView) {
             super(itemView);
             tvName = (TextView) itemView.findViewById(R.id.tv_userName);
             tvId = (TextView) itemView.findViewById(R.id.tv_userId);
             ivImage = (CircleImageView) itemView.findViewById(R.id.iv_userImage);
+            followButton = (Button) itemView.findViewById(R.id.follow_button);
+            followButton.setOnClickListener(this);
             itemView.setOnClickListener(this);
         }
 
         private void bindType(MyListItem currentPlayer) {
             Player item = (Player) currentPlayer;
+            long playerId = item.getUserId();
+            long followId;
 
+            while (cursor.moveToNext()) {
+                followId = (long) cursor.getInt(cursor.getColumnIndex(DotaFollowing.COLUMN_PLAYER_ID));
+                if (playerId == followId) {
+                    isFollowing = true;
+                    break;
+                } else
+                    isFollowing = false;
+
+            }
+
+            if (isFollowing)
+                followButton.setText("Unfollow");
+            else
+                followButton.setText("Follow");
             tvName.setText(item.getUserName());
             tvId.setText(String.valueOf(item.getUserId()));
             glide.load(item.getImageUrl()).into(ivImage);
@@ -144,8 +176,31 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public void onClick(View v) {
             int position = getAdapterPosition();
             long playerId = ((Player) list.get(position)).getUserId();
-            listener.onItemViewClick(playerId);
+            switch (v.getId()) {
+                case R.id.itemView:
+                    listener.onItemViewClick(playerId);
+                    break;
+                case R.id.follow_button:
+                    if (isFollowing) {
+                        Uri uri = DotaFollowing.CONTENT_URI.buildUpon().appendPath(String.valueOf(playerId)).build();
+                        context.getContentResolver().delete(
+                                uri,
+                                null,
+                                null);
+                        followButton.setText("Follow");
+                        isFollowing = false;
+                    } else {
+                        ContentValues values = new ContentValues();
+                        values.put(DotaFollowing.COLUMN_PLAYER_ID, playerId);
+                        context.getContentResolver().insert(
+                                DotaFollowing.CONTENT_URI,
+                                values);
+                        followButton.setText("Unfollow");
+                        isFollowing = true;
+                    }
+                    break;
 
+            }
         }
     }
 

@@ -132,7 +132,22 @@ public class DotaProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        int deletedRows;
+
+        switch (sUriMatcher.match(uri)) {
+            case CODE_FOLLOW_ID:
+                selection = DotaFollowing.COLUMN_PLAYER_ID + "=?";
+                selectionArgs = new String[]{uri.getLastPathSegment()};
+                deletedRows = mDbHelper.getWritableDatabase().delete(
+                        DotaFollowing.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unkown uri " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return deletedRows;
     }
 
     @Override

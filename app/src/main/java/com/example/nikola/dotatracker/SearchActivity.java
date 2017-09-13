@@ -35,6 +35,7 @@ import com.bumptech.glide.Glide;
 import com.example.nikola.dotatracker.adapters.CurAdapter;
 import com.example.nikola.dotatracker.adapters.RecAdapter;
 import com.example.nikola.dotatracker.data.DotaContract.DotaEntry;
+import com.example.nikola.dotatracker.data.DotaContract.DotaFollowing;
 import com.example.nikola.dotatracker.details.PlayerDetailActivity;
 import com.example.nikola.dotatracker.interfaces.MyListItem;
 import com.example.nikola.dotatracker.utils.NetworkUtils;
@@ -45,51 +46,72 @@ import java.util.List;
 public class SearchActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<MyListItem>>, RecAdapter.OnItemViewClickListener, CurAdapter.OnSuggestionClickListener {
 
     private Toast toast;
-    private RecAdapter mAdapter;
+    private RecAdapter searchAdapter;
     private ProgressBar pBarSearch;
     private View dimView;
     private SearchView searchView;
     private CurAdapter cursorAdapter;
-    private RecyclerView recentEntryRecView;
+    private RecyclerView suggestionRecView;
 
     public static final String INTENT_EXTRA_KEY = "playerID";
     private static final String BUNDLE_SEARCH = "search";
-    private static final int LOADER_SUGGESTION = 1;
     private static final int LOADER_SEARCH = 0;
+    private static final int LOADER_SUGGESTION = 1;
+    private static final int LOADER_FOLLOW = 2;
     private static final String BUNDLE_SUGGESTION = "suggest";
     private static final String LOG_TAG = SearchActivity.class.getSimpleName();
 
 
-    private LoaderManager.LoaderCallbacks<Cursor> recentEntryLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
+    private LoaderManager.LoaderCallbacks<Cursor> cursorLoaders = new LoaderManager.LoaderCallbacks<Cursor>() {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            if (args != null) {
-                String query = args.getString(BUNDLE_SUGGESTION);
-                Uri uri = DotaEntry.CONTENT_URI.buildUpon().appendPath(query).build();
-                return new CursorLoader(
-                        SearchActivity.this,
-                        uri,
-                        null,
-                        null,
-                        null,
-                        null
-                );
-            } else {
-                return new CursorLoader(
-                        SearchActivity.this,
-                        DotaEntry.CONTENT_URI,
-                        null,
-                        null,
-                        null,
-                        null);
-            }
+            switch (id) {
 
+                case LOADER_SUGGESTION:
+                    if (args != null) {
+                        String query = args.getString(BUNDLE_SUGGESTION);
+                        Uri uri = DotaEntry.CONTENT_URI.buildUpon().appendPath(query).build();
+                        return new CursorLoader(
+                                SearchActivity.this,
+                                uri,
+                                null,
+                                null,
+                                null,
+                                null
+                        );
+                    } else {
+                        return new CursorLoader(
+                                SearchActivity.this,
+                                DotaEntry.CONTENT_URI,
+                                null,
+                                null,
+                                null,
+                                null);
+                    }
+                case LOADER_FOLLOW:
+                    return new CursorLoader(
+                            SearchActivity.this,
+                            DotaFollowing.CONTENT_URI,
+                            null,
+                            null,
+                            null,
+                            null);
+            }
+            return null;
         }
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            cursorAdapter.swapCursor(data);
+            switch (loader.getId()) {
+                case LOADER_SUGGESTION:
+                    cursorAdapter.swapCursor(data);
+                    break;
+                case LOADER_FOLLOW:
+                    searchAdapter.setupFollowingList(data);
+                    break;
+            }
+
         }
 
         @Override
@@ -109,18 +131,18 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
 
         dimView = findViewById(R.id.dim_View);
         pBarSearch = (ProgressBar) findViewById(R.id.pBarSearch);
-        mAdapter = new RecAdapter(Glide.with(this), new ArrayList<MyListItem>(), this);
+        searchAdapter = new RecAdapter(this, Glide.with(this), new ArrayList<MyListItem>(), this, null);
 
         cursorAdapter = new CurAdapter(null, this);
 
-        recentEntryRecView = (RecyclerView) findViewById(R.id.recentEntry_recView);
-        recentEntryRecView.setLayoutManager(new LinearLayoutManager(this));
-        recentEntryRecView.setAdapter(cursorAdapter);
-        recentEntryRecView.setHasFixedSize(true);
+        suggestionRecView = (RecyclerView) findViewById(R.id.recentEntry_recView);
+        suggestionRecView.setLayoutManager(new LinearLayoutManager(this));
+        suggestionRecView.setAdapter(cursorAdapter);
+        suggestionRecView.setHasFixedSize(true);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.search_recView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(mAdapter);
+        recyclerView.setAdapter(searchAdapter);
         recyclerView.setHasFixedSize(true);
         dimView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -136,7 +158,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
 
 
         getLoaderManager().initLoader(LOADER_SEARCH, null, this);
-        getLoaderManager().initLoader(LOADER_SUGGESTION, null, recentEntryLoader);
+        getLoaderManager().initLoader(LOADER_SUGGESTION, null, cursorLoaders);
+        getLoaderManager().initLoader(LOADER_FOLLOW, null, cursorLoaders);
     }
 
 
@@ -181,7 +204,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchView.clearFocus();
-                mAdapter.removeData();
+                searchAdapter.removeData();
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(DotaEntry.COLUMN_ENTRY, query);
                 getContentResolver().insert(DotaEntry.CONTENT_URI, contentValues);
@@ -190,6 +213,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 if (isConnected()) {
                     pBarSearch.setVisibility(View.VISIBLE);
                     getLoaderManager().restartLoader(LOADER_SEARCH, bundle, SearchActivity.this);
+                    getLoaderManager().restartLoader(LOADER_FOLLOW, null, SearchActivity.this);
                 } else {
                     showToast(SearchActivity.this, "Check your network connection");
                 }
@@ -201,12 +225,12 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 if (!TextUtils.isEmpty(newText)) {
                     Bundle bundle = new Bundle();
                     bundle.putString(BUNDLE_SUGGESTION, newText);
-                    recentEntryRecView.setVisibility(View.VISIBLE);
-                    getLoaderManager().restartLoader(LOADER_SUGGESTION, bundle, recentEntryLoader);
+                    suggestionRecView.setVisibility(View.VISIBLE);
+                    getLoaderManager().restartLoader(LOADER_SUGGESTION, bundle, cursorLoaders);
                 } else {
                     // Da se obrise lista kada nema nikakvog texta u searchu
                     cursorAdapter.swapCursor(null);
-                    recentEntryRecView.setVisibility(View.GONE);
+                    suggestionRecView.setVisibility(View.GONE);
                 }
                 return true;
             }
@@ -218,10 +242,10 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 int startColor = ContextCompat.getColor(SearchActivity.this, R.color.startColor);
                 int endColor = ContextCompat.getColor(SearchActivity.this, R.color.endColor);
                 if (hasFocus) {
-                    recentEntryRecView.setVisibility(View.VISIBLE);
+                    suggestionRecView.setVisibility(View.VISIBLE);
                     animateDimView(startColor, endColor, 0);
                 } else {
-                    recentEntryRecView.setVisibility(View.GONE);
+                    suggestionRecView.setVisibility(View.GONE);
                     animateDimView(endColor, startColor, 0);
                 }
 
@@ -242,7 +266,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onLoadFinished(Loader<List<MyListItem>> loader, List<MyListItem> data) {
         pBarSearch.setVisibility(View.GONE);
-        mAdapter.addList(data);
+        searchAdapter.addList(data);
         Log.v(LOG_TAG, "TIMECHECKING, onLoadFinished ");
 
     }

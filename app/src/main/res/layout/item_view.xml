@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/itemView"
     android:background="?attr/selectableItemBackground"
     android:paddingTop="8dp">
 
@@ -47,6 +48,7 @@
 
         <Button
             style="@style/TextAppearance.AppCompat.Body1"
+            android:id="@+id/follow_button"
             android:layout_width="85dp"
             android:layout_height="30dp"
             android:layout_gravity="center_vertical"
