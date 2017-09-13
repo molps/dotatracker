@@ -20,6 +20,9 @@ public class DotaProvider extends ContentProvider {
     private static final int CODE_SEARCH = 100;
     private static final int CODE_SEARCH_ID = 101;
 
+    private static final int CODE_FOLLOW = 200;
+    private static final int CODE_FOLLOW_ID = 201;
+
     private DotaDbHelper mDbHelper;
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
@@ -28,6 +31,9 @@ public class DotaProvider extends ContentProvider {
 
         matcher.addURI(DotaContract.CONTENT_AUTHORITY, DotaContract.PATH_SEARCH, CODE_SEARCH);
         matcher.addURI(DotaContract.CONTENT_AUTHORITY, DotaContract.PATH_SEARCH + "/*", CODE_SEARCH_ID);
+
+        matcher.addURI(DotaContract.CONTENT_AUTHORITY, DotaContract.PATH_FOLLOWING, CODE_FOLLOW);
+        matcher.addURI(DotaContract.CONTENT_AUTHORITY, DotaContract.PATH_FOLLOWING + "/#", CODE_FOLLOW_ID);
 
         return matcher;
     }
