@@ -199,6 +199,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         values.put(DotaFollowing.COLUMN_PLAYER_ID, playerId);
                         values.put(DotaFollowing.COLUMN_NAME, player.getUserName());
                         values.put(DotaFollowing.COLUMN_IMAGE_URL, player.getImageUrl());
+                        values.put(DotaFollowing.TYPE, DotaFollowing.FOLLOWING_TYPE);
                         context.getContentResolver().insert(
                                 DotaFollowing.CONTENT_URI,
                                 values);

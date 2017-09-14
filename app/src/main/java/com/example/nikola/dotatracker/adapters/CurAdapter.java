@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.nikola.dotatracker.R;
 import com.example.nikola.dotatracker.data.DotaContract.DotaEntry;
+import com.example.nikola.dotatracker.interfaces.TableType;
 
 public class CurAdapter extends RecyclerView.Adapter<CurAdapter.MyViewHolder> {
 
@@ -19,6 +20,12 @@ public class CurAdapter extends RecyclerView.Adapter<CurAdapter.MyViewHolder> {
     public CurAdapter(Cursor cursor, OnSuggestionClickListener suggestionListener) {
         this.cursor = cursor;
         this.suggestionListener = suggestionListener;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        cursor.moveToPosition(position);
+        return cursor.getInt(cursor.getColumnIndex(TableType.TYPE));
     }
 
     @Override

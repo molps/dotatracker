@@ -207,6 +207,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 searchAdapter.removeData();
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(DotaEntry.COLUMN_ENTRY, query);
+                contentValues.put(DotaEntry.TYPE, DotaEntry.SUGGESTION_TYPE);
                 getContentResolver().insert(DotaEntry.CONTENT_URI, contentValues);
                 Bundle bundle = new Bundle();
                 bundle.putString(BUNDLE_SEARCH, query);

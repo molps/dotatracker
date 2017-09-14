@@ -4,6 +4,8 @@ package com.example.nikola.dotatracker.data;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import com.example.nikola.dotatracker.interfaces.TableType;
+
 public class DotaContract {
 
     public static final String CONTENT_AUTHORITY = "com.example.nikola.dotatracker";
@@ -11,7 +13,7 @@ public class DotaContract {
     public static final String PATH_SEARCH = "search";
     public static final String PATH_FOLLOWING = "following";
 
-    public static class DotaEntry implements BaseColumns {
+    public static class DotaEntry implements BaseColumns, TableType {
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_SEARCH).build();
 
@@ -19,7 +21,7 @@ public class DotaContract {
         public static final String COLUMN_ENTRY = "entry";
     }
 
-    public static class DotaFollowing implements BaseColumns {
+    public static class DotaFollowing implements BaseColumns, TableType {
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_FOLLOWING).build();
 

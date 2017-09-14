@@ -21,6 +21,7 @@ public class DotaDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String sqlSuggestion = "CREATE TABLE " + DotaEntry.TABLE_NAME + " ("
                 + DotaEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + DotaEntry.TYPE + " INTEGER NOT NULL, "
                 + DotaEntry.COLUMN_ENTRY + " TEXT NOT NULL COLLATE NOCASE UNIQUE ON CONFLICT REPLACE);";
 
         String sqlFollowing = "CREATE TABLE " + DotaFollowing.TABLE_NAME + " ("
@@ -28,6 +29,7 @@ public class DotaDbHelper extends SQLiteOpenHelper {
                 + DotaFollowing.COLUMN_PLAYER_ID + " INTEGER NOT NULL, "
                 + DotaFollowing.COLUMN_NAME + " TEXT NOT NULL, "
                 + DotaFollowing.COLUMN_IMAGE_URL + " TEXT NOT NULL, "
+                + DotaFollowing.TYPE + " INTEGER NOT NULL, "
                 + DotaFollowing.COLUMN_TAG + " TEXT);";
 
         db.execSQL(sqlSuggestion);
