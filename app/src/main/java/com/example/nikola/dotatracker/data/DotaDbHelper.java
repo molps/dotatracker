@@ -26,6 +26,8 @@ public class DotaDbHelper extends SQLiteOpenHelper {
         String sqlFollowing = "CREATE TABLE " + DotaFollowing.TABLE_NAME + " ("
                 + DotaFollowing._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + DotaFollowing.COLUMN_PLAYER_ID + " INTEGER NOT NULL, "
+                + DotaFollowing.COLUMN_NAME + " TEXT NOT NULL, "
+                + DotaFollowing.COLUMN_IMAGE_URL + " TEXT NOT NULL, "
                 + DotaFollowing.COLUMN_TAG + " TEXT);";
 
         db.execSQL(sqlSuggestion);

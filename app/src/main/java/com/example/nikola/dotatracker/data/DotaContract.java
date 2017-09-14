@@ -25,6 +25,8 @@ public class DotaContract {
 
         public static final String TABLE_NAME = "followingplayers";
         public static final String COLUMN_PLAYER_ID = "steamid";
+        public static final String COLUMN_NAME = "name";
         public static final String COLUMN_TAG = "tag";
+        public static final String COLUMN_IMAGE_URL = "imageurl";
     }
 }

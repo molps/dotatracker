@@ -158,7 +158,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             while (cursor.moveToNext()) {
                 followId = (long) cursor.getInt(cursor.getColumnIndex(DotaFollowing.COLUMN_PLAYER_ID));
-                Log.v(LOG_TAG, "FOLLOW TEST: " + (playerId==followId));
+                Log.v(LOG_TAG, "FOLLOW TEST: " + (playerId == followId));
                 if (playerId == followId) {
                     item.setStatus(true);
                     break;
@@ -193,10 +193,12 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 null,
                                 null);
                         followButton.setText("Follow");
-                       player.setStatus(false);
+                        player.setStatus(false);
                     } else {
                         ContentValues values = new ContentValues();
                         values.put(DotaFollowing.COLUMN_PLAYER_ID, playerId);
+                        values.put(DotaFollowing.COLUMN_NAME, player.getUserName());
+                        values.put(DotaFollowing.COLUMN_IMAGE_URL, player.getImageUrl());
                         context.getContentResolver().insert(
                                 DotaFollowing.CONTENT_URI,
                                 values);
