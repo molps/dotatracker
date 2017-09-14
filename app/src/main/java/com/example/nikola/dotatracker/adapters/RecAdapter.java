@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -155,8 +154,23 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             Player item = (Player) currentPlayer;
             long playerId = item.getUserId();
             long followId;
+            // this replaced bottom comment ----------------------------------------------
+            Uri uri = DotaFollowing.CONTENT_URI.buildUpon().appendPath(String.valueOf(playerId)).build();
+            if (context.getContentResolver().query(
+                    uri,
+                    null,
+                    null,
+                    null,
+                    null).moveToNext()) {
+                item.setStatus(true);
+                followButton.setText("Unfollow");
+            } else {
+                followButton.setText("Follow");
+                item.setStatus(false);
+            }
+            // ---------------------------------------------------------------------------------
 
-            while (cursor.moveToNext()) {
+         /*   while (cursor.moveToNext()) {
                 followId = (long) cursor.getInt(cursor.getColumnIndex(DotaFollowing.COLUMN_PLAYER_ID));
                 Log.v(LOG_TAG, "FOLLOW TEST: " + (playerId == followId));
                 if (playerId == followId) {
@@ -165,12 +179,13 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 } else
                     item.setStatus(false);
 
-            }
+            }*/
 
             if (item.getStatus())
                 followButton.setText("Unfollow");
             else
                 followButton.setText("Follow");
+
             tvName.setText(item.getUserName());
             tvId.setText(String.valueOf(item.getUserId()));
             glide.load(item.getImageUrl()).into(ivImage);

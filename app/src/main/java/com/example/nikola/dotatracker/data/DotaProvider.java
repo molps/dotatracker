@@ -83,6 +83,19 @@ public class DotaProvider extends ContentProvider {
                 break;
             default:
                 throw new UnsupportedOperationException("Can not perform query on this uri: " + uri);
+
+            case CODE_FOLLOW_ID:
+                selection = DotaFollowing.COLUMN_PLAYER_ID + "=?";
+                selectionArgs = new String[]{uri.getLastPathSegment()};
+                cursor = mDbHelper.getReadableDatabase().query(
+                        DotaFollowing.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
         }
         if (cursor != null) {
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
