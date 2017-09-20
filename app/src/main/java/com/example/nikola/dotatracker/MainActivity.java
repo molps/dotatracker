@@ -3,6 +3,7 @@ package com.example.nikola.dotatracker;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -32,12 +33,14 @@ public class MainActivity extends AppCompatActivity {
         final Fragment homeFragment = new HomeFragment();
         final Fragment matchesFragment = new MatchesFragment();
         final Fragment followingFragment = new FollowingFragment();
+        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.main_activity_appBar);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_placeholder_main_activity, homeFragment).commit();
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                appBarLayout.setExpanded(true, true);
                 switch (item.getItemId()) {
                     case R.id.action_home:
                         switchFragments(homeFragment, followingFragment, matchesFragment);
@@ -74,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     *
      * @param fragment only 1st fragment is shown, rest of them are hidden
      */
     private void switchFragments(Fragment... fragment) {
