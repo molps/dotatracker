@@ -7,19 +7,24 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.nikola.dotatracker.R;
+import com.example.nikola.dotatracker.adapters.CurAdapter;
 import com.example.nikola.dotatracker.data.DotaContract.DotaFollowing;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class FollowingFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private TextView textView;
+    private CurAdapter mAdapter;
+    private static final String LOG_TAG = FollowingFragment.class.getSimpleName();
 
     public FollowingFragment() {
         // Required empty public constructor
@@ -30,8 +35,13 @@ public class FollowingFragment extends Fragment implements LoaderManager.LoaderC
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.v(LOG_TAG, "fragmentFollowing onCreateView");
         View view = inflater.inflate(R.layout.fragment_following, container, false);
-        textView = (TextView) view.findViewById(R.id.fragment_following_textView);
+        mAdapter = new CurAdapter(null, Glide.with(this));
+        RecyclerView recView = (RecyclerView) view.findViewById(R.id.fragment_following_recView);
+        recView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recView.setAdapter(mAdapter);
+        recView.setHasFixedSize(true);
         getLoaderManager().initLoader(0, null, this);
         return view;
     }
@@ -49,11 +59,7 @@ public class FollowingFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        textView.setText("");
-        if (data != null) {
-            while (data.moveToNext())
-                textView.append("\n\n" + data.getString(data.getColumnIndex(DotaFollowing.COLUMN_PLAYER_ID)));
-        }
+        mAdapter.swapCursor(data);
     }
 
     @Override
