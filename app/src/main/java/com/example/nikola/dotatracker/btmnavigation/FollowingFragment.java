@@ -1,6 +1,7 @@
 package com.example.nikola.dotatracker.btmnavigation;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -18,11 +19,15 @@ import com.bumptech.glide.Glide;
 import com.example.nikola.dotatracker.R;
 import com.example.nikola.dotatracker.adapters.CurAdapter;
 import com.example.nikola.dotatracker.data.DotaContract.DotaFollowing;
+import com.example.nikola.dotatracker.details.PlayerDetailActivity;
+import com.example.nikola.dotatracker.interfaces.OnItemViewClickListener;
+
+import static com.example.nikola.dotatracker.SearchActivity.INTENT_EXTRA_KEY;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FollowingFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FollowingFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemViewClickListener {
     private CurAdapter mAdapter;
     private static final String LOG_TAG = FollowingFragment.class.getSimpleName();
 
@@ -37,7 +42,7 @@ public class FollowingFragment extends Fragment implements LoaderManager.LoaderC
         // Inflate the layout for this fragment
         Log.v(LOG_TAG, "fragmentFollowing onCreateView");
         View view = inflater.inflate(R.layout.fragment_following, container, false);
-        mAdapter = new CurAdapter(null, Glide.with(this));
+        mAdapter = new CurAdapter(this, getContext(),null, Glide.with(this));
         RecyclerView recView = (RecyclerView) view.findViewById(R.id.fragment_following_recView);
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(mAdapter);
@@ -67,4 +72,10 @@ public class FollowingFragment extends Fragment implements LoaderManager.LoaderC
 
     }
 
+    @Override
+    public void onItemViewClick(long playerId) {
+        Intent intent = new Intent(getContext(), PlayerDetailActivity.class);
+        intent.putExtra(INTENT_EXTRA_KEY, String.valueOf(playerId));
+        startActivity(intent);
+    }
 }

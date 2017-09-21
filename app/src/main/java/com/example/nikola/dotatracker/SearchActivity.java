@@ -38,12 +38,13 @@ import com.example.nikola.dotatracker.data.DotaContract.DotaEntry;
 import com.example.nikola.dotatracker.data.DotaContract.DotaFollowing;
 import com.example.nikola.dotatracker.details.PlayerDetailActivity;
 import com.example.nikola.dotatracker.interfaces.MyListItem;
+import com.example.nikola.dotatracker.interfaces.OnItemViewClickListener;
 import com.example.nikola.dotatracker.utils.NetworkUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<MyListItem>>, RecAdapter.OnItemViewClickListener, CurAdapter.OnSuggestionClickListener {
+public class SearchActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<MyListItem>>, OnItemViewClickListener, CurAdapter.OnSuggestionClickListener {
 
     private Toast toast;
     private RecAdapter searchAdapter;

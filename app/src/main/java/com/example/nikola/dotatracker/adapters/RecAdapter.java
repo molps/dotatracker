@@ -23,6 +23,7 @@ import com.example.nikola.dotatracker.R;
 import com.example.nikola.dotatracker.RecentMatches;
 import com.example.nikola.dotatracker.data.DotaContract.DotaFollowing;
 import com.example.nikola.dotatracker.interfaces.MyListItem;
+import com.example.nikola.dotatracker.interfaces.OnItemViewClickListener;
 
 import java.util.List;
 
@@ -129,9 +130,6 @@ public class RecAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.cursor = cursor;
     }
 
-    public interface OnItemViewClickListener {
-        void onItemViewClick(long playerId);
-    }
 
     private class PlayerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView tvName;

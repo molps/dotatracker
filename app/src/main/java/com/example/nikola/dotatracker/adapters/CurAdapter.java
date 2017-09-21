@@ -1,7 +1,9 @@
 package com.example.nikola.dotatracker.adapters;
 
 
+import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,7 @@ import com.bumptech.glide.RequestManager;
 import com.example.nikola.dotatracker.R;
 import com.example.nikola.dotatracker.data.DotaContract.DotaEntry;
 import com.example.nikola.dotatracker.data.DotaContract.DotaFollowing;
+import com.example.nikola.dotatracker.interfaces.OnItemViewClickListener;
 import com.example.nikola.dotatracker.interfaces.TableType;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -20,6 +23,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CurAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private Context context;
+    private OnItemViewClickListener listener;
     private Cursor cursor;
     private OnSuggestionClickListener suggestionListener;
     private RequestManager glide;
@@ -29,9 +34,11 @@ public class CurAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.suggestionListener = suggestionListener;
     }
 
-    public CurAdapter(Cursor cursor, RequestManager glide) {
+    public CurAdapter(OnItemViewClickListener listener, Context context, Cursor cursor, RequestManager glide) {
         this.cursor = cursor;
         this.glide = glide;
+        this.listener = listener;
+        this.context = context;
     }
 
     @Override
@@ -107,7 +114,7 @@ public class CurAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public class PlayerViewHolder extends RecyclerView.ViewHolder {
+    public class PlayerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView tvName;
         private TextView tvId;
         private CircleImageView ivImage;
@@ -119,6 +126,7 @@ public class CurAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             tvId = (TextView) itemView.findViewById(R.id.tv_userId);
             ivImage = (CircleImageView) itemView.findViewById(R.id.iv_userImage);
             followButton = (Button) itemView.findViewById(R.id.follow_button);
+            followButton.setOnClickListener(this);
 
         }
 
@@ -126,8 +134,30 @@ public class CurAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             tvName.setText(cursor.getString(cursor.getColumnIndex(DotaFollowing.COLUMN_NAME)));
             tvId.setText(cursor.getString(cursor.getColumnIndex(DotaFollowing.COLUMN_PLAYER_ID)));
             glide.load(cursor.getString(cursor.getColumnIndex(DotaFollowing.COLUMN_IMAGE_URL))).into(ivImage);
-            followButton.setVisibility(View.GONE);
+            followButton.setText("Unfollow");
+            itemView.setOnClickListener(this);
 
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            cursor.moveToPosition(position);
+            long id = cursor.getLong(cursor.getColumnIndex(DotaFollowing.COLUMN_PLAYER_ID));
+            switch (v.getId()) {
+                case R.id.itemView:
+                    listener.onItemViewClick(id);
+                    break;
+                case R.id.follow_button:
+                    Uri uri = DotaFollowing.CONTENT_URI.buildUpon().appendPath(String.valueOf(id)).build();
+                    context.getContentResolver().delete(
+                            uri,
+                            null,
+                            null);
+                    break;
+
+
+            }
         }
     }
 }
